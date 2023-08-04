@@ -85,7 +85,7 @@ SlashCmdList["SELFFOUND"] = function(msg)
     end
 end
 
-function SelfFound:ADDON_LOADED()
+function SelfFound:PLAYER_ENTERING_WORLD()
     local expansion = SelfFound:Expansion()
     local maxLvl = 60
 
@@ -102,9 +102,7 @@ function SelfFound:ADDON_LOADED()
     SelfFound.hardcoreMode = { mode = "hardcore", mailLvl = 9000, ahLvl = 9000, tradeLvl = 9000 }
     SelfFound.bankMode = { mode = "bank", mailLvl = 1, ahLvl = 9000, tradeLvl = 9000 }
     SelfFound.modeCmds = { "sane", "max", "hardcore", "bank" }
-end
 
-function SelfFound:PLAYER_ENTERING_WORLD()
     local isLvl1 = UnitLevel("player") == 1
 
     if isLvl1 then
@@ -189,7 +187,6 @@ end)
 -- end
 
 -- Start the addon
-SelfFound:RegisterEvent("ADDON_LOADED")
 SelfFound:RegisterEvent("PLAYER_ENTERING_WORLD")
 SelfFound:RegisterEvent("PLAYER_LEVEL_UP")
 SelfFound:RegisterEvent("MAIL_SHOW")
