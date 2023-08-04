@@ -2,7 +2,7 @@
 ## Title: SelfFound
 ## Author: kawerte
 ## Notes: Implement self found mechanics
-## Version: 0.0.2
+## Version: GIT
 ## SavedVariablesPerCharacter: SF_CONFIG
 
 SelfFound.lua

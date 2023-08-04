@@ -51,8 +51,8 @@ SlashCmdList["SELFFOUND"] = function(msg)
     local isChangeModeCmd = SelfFound:Contains(SelfFound.modeCmds, cmd)
 
     if (isNotLvl1 and not SF_CONFIG) then
-        SelfFound:Print("Addon is disabled.")
-        SelfFound:Print("It can only be activated from a lvl 1 character.")
+        SelfFound:Print("SelfFound is disabled for this character.")
+        SelfFound:Print("It can only be activated from lvl 1.")
         return
     end
 
@@ -77,7 +77,7 @@ SlashCmdList["SELFFOUND"] = function(msg)
         SF_CONFIG = SelfFound.maxMode
         SelfFound:SuccessPrint()
     elseif cmd == "hardcore" then
-        SF_CONFIG = SelfFound.hcMode
+        SF_CONFIG = SelfFound.hardcoreMode
         SelfFound:SuccessPrint()
     elseif cmd == "bank" then
         SF_CONFIG = SelfFound.bankMode
@@ -99,9 +99,9 @@ function SelfFound:ADDON_LOADED()
 
     SelfFound.saneMode = { mode = "sane", mailLvl = saneLvl, ahLvl = saneLvl, tradeLvl = saneLvl }
     SelfFound.maxMode = { mode = "max", mailLvl = maxLvl, ahLvl = maxLvl, tradeLvl = maxLvl }
-    SelfFound.hcMode = { mode = "hc", mailLvl = 9000, ahLvl = 9000, tradeLvl = 9000 }
+    SelfFound.hardcoreMode = { mode = "hardcore", mailLvl = 9000, ahLvl = 9000, tradeLvl = 9000 }
     SelfFound.bankMode = { mode = "bank", mailLvl = 1, ahLvl = 9000, tradeLvl = 9000 }
-    SelfFound.modeCmds = { "sane", "max", "hc", "bank" }
+    SelfFound.modeCmds = { "sane", "max", "hardcore", "bank" }
 end
 
 function SelfFound:PLAYER_ENTERING_WORLD()
@@ -127,7 +127,7 @@ function SelfFound:PLAYER_LEVEL_UP(newLvl)
     if (isBankMode and newLvl == 2) then
         SF_CONFIG = nil
         SelfFound:Print("Your bank character has leveled up.")
-        SelfFound:Print("The SelfFound addon is now disabled for him.")
+        SelfFound:Print("The SelfFound addon is now disabled.")
         return
     end
 
