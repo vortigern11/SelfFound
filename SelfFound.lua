@@ -95,9 +95,7 @@ function SelfFound:PLAYER_ENTERING_WORLD()
         maxLvl = 80
     end
 
-    local saneLvl = math.floor(maxLvl * 3 / 4)
-
-    SelfFound.saneMode = { mode = "sane", mailLvl = saneLvl, ahLvl = saneLvl, tradeLvl = saneLvl }
+    SelfFound.saneMode = { mode = "sane", mailLvl = maxLvl / 2, ahLvl = maxLvl, tradeLvl = maxLvl }
     SelfFound.maxMode = { mode = "max", mailLvl = maxLvl, ahLvl = maxLvl, tradeLvl = maxLvl }
     SelfFound.hardcoreMode = { mode = "hardcore", mailLvl = 9000, ahLvl = 9000, tradeLvl = 9000 }
     SelfFound.bankMode = { mode = "bank", mailLvl = 1, ahLvl = 9000, tradeLvl = 9000 }

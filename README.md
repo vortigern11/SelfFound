@@ -14,12 +14,12 @@ Works with TurtleWoW, Vanilla, The Burning Crusade (TBC), Wrath of the Lich King
 
 These are the available modes and lvl requirements for using Mail, AH and Trading:
 
-| Mode     | Mail Lvl      | Auction House | Trading      |
-| -        | -             | -             | -            |
-| Sane     | 3/4 * MaxLvl  | 3/4 * MaxLvl  | 3/4 * MaxLvl |
-| Max      | MaxLvl        | MaxLvl        | MaxLvl       |
-| Hardcore | Never         | Never         | Never        |
-| Bank     | Only at lvl 1 | Never         | Never        |
+| Mode     | Mail Lvl      | Auction House | Trading |
+| -        | -             | -             | -       |
+| Sane     | Half Max Lvl  | Max Lvl       | Max Lvl |
+| Max      | Max Lvl       | Max Lvl       | Max Lvl |
+| Hardcore | Never         | Never         | Never   |
+| Bank     | Only at lvl 1 | Never         | Never   |
 
 Chat Commands:
 * `/selffound info` - shows the mode that the addon is using.
