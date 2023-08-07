@@ -64,20 +64,20 @@ SlashCmdList["SELFFOUND"] = function(msg)
     local isBankMode = SF_CONFIG.mode == "bank"
 
     if (isBankMode and isChangeModeCmd) then
-        SelfFound:Print("Bank character's addon mode can't be changed")
+        SelfFound:Print("You can't change away from bank mode")
         return
     end
 
     if cmd == "info" then
         SelfFound:SuccessPrint()
-    elseif cmd == "sane" then
-        SF_CONFIG = SelfFound.saneMode
-        SelfFound:SuccessPrint()
-    elseif cmd == "max" then
-        SF_CONFIG = SelfFound.maxMode
+    elseif cmd == "normal" then
+        SF_CONFIG = SelfFound.normalMode
         SelfFound:SuccessPrint()
     elseif cmd == "hardcore" then
         SF_CONFIG = SelfFound.hardcoreMode
+        SelfFound:SuccessPrint()
+    elseif cmd == "collector" then
+        SF_CONFIG = SelfFound.collectorMode
         SelfFound:SuccessPrint()
     elseif cmd == "bank" then
         SF_CONFIG = SelfFound.bankMode
@@ -95,22 +95,24 @@ function SelfFound:PLAYER_ENTERING_WORLD()
         maxLvl = 80
     end
 
-    SelfFound.saneMode = { mode = "sane", mailLvl = maxLvl / 2, ahLvl = maxLvl, tradeLvl = maxLvl }
-    SelfFound.maxMode = { mode = "max", mailLvl = maxLvl, ahLvl = maxLvl, tradeLvl = maxLvl }
-    SelfFound.hardcoreMode = { mode = "hardcore", mailLvl = 9000, ahLvl = 9000, tradeLvl = 9000 }
+    SelfFound.normalMode = { mode = "normal", mailLvl = maxLvl / 2, ahLvl = maxLvl, tradeLvl = maxLvl }
+    SelfFound.hardcoreMode = { mode = "hardcore", mailLvl = maxLvl, ahLvl = 9000, tradeLvl = 9000 }
+    SelfFound.collectorMode = { mode = "collector", mailLvl = 9000, ahLvl = 9000, tradeLvl = 9000 }
     SelfFound.bankMode = { mode = "bank", mailLvl = 1, ahLvl = 9000, tradeLvl = 9000 }
-    SelfFound.modeCmds = { "sane", "max", "hardcore", "bank" }
+    SelfFound.modeCmds = { "normal", "hardcore", "collector", "bank" }
 
     local isLvl1 = UnitLevel("player") == 1
 
     if isLvl1 then
-        if not SF_CONFIG then SF_CONFIG = SelfFound.saneMode end
+        if not SF_CONFIG then SF_CONFIG = SelfFound.normalMode end
 
         SelfFound:Print("-----------------------------------------------------------")
         SelfFound:Print("!!! Addon mode can only be changed at level 1 !!!")
         SelfFound:Print("Read the README file in the addon's folder for important info")
         SelfFound:Print("To see which mode you are currently using, type '/selffound info'")
         SelfFound:Print("-----------------------------------------------------------")
+    else
+        if not SF_CONFIG then SF_CONFIG = SelfFound.collectorMode end
     end
 end
 
@@ -121,9 +123,9 @@ function SelfFound:PLAYER_LEVEL_UP(newLvl)
     local isBankMode = SF_CONFIG.mode == "bank"
 
     if (isBankMode and newLvl == 2) then
-        SF_CONFIG = nil
+        SF_CONFIG = SelfFound.collectorMode
         SelfFound:Print("Your bank character has leveled up.")
-        SelfFound:Print("The SelfFound addon is now disabled.")
+        SelfFound:Print("Addon is changed to collector mode")
         return
     end
 
@@ -140,17 +142,12 @@ end
 
 -- Limit mail
 function SelfFound:MAIL_SHOW()
-    local isBankChar = SF_CONFIG.mode == "bank" and UnitLevel("player") == 1
     local isHighEnoughLvl = UnitLevel("player") >= SF_CONFIG.mailLvl
 
-    if (isBankChar or isHighEnoughLvl) then return end
+    if isHighEnoughLvl then return end
 
-    if isBankChar then
-        SelfFound:Print("Mail can only be used if player lvl is " .. SF_CONFIG.mailLvl)
-    else
-        SelfFound:Print("Mail can only be used if player lvl >= " .. SF_CONFIG.mailLvl)
-    end
-
+    SelfFound:Print("Addon is in " .. SF_CONFIG.mode .. " mode")
+    SelfFound:Print("Mail is available from lvl " .. SF_CONFIG.mailLvl)
     CloseMail()
 end
 
@@ -160,7 +157,8 @@ function SelfFound:AUCTION_HOUSE_SHOW()
 
     if isHighEnoughLvl then return end
 
-    SelfFound:Print("Auction House can only be used if player lvl >= " .. SF_CONFIG.ahLvl)
+    SelfFound:Print("Addon is in " .. SF_CONFIG.mode .. " mode")
+    SelfFound:Print("Auction House is available from lvl " .. SF_CONFIG.ahLvl)
     CloseAuctionHouse()
 end
 
@@ -172,7 +170,8 @@ TradeFrameTradeButton:SetScript("OnClick", function()
     if (isInInstance or isHighEnoughLvl) then
         AcceptTrade()
     else
-        SelfFound:Print("Trading can only be used in instances or if player lvl >= " .. SF_CONFIG.tradeLvl)
+        SelfFound:Print("Addon is in " .. SF_CONFIG.mode .. " mode")
+        SelfFound:Print("Trading is available from lvl " .. SF_CONFIG.tradeLvl .. " or in instances")
         CloseTrade()
     end
 end)

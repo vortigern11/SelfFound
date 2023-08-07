@@ -4,26 +4,23 @@ This addon will prevent you from Trading, using the Auction House and Mailing un
 Works with TurtleWoW, Vanilla, The Burning Crusade (TBC), Wrath of the Lich King (Wotlk).
 
 ### Important Specifics
-* ! Addon mode can only be changed at lvl 1 !
-* ! If a bank character levels up, the addon will be disabled for him. !
+* In order to change the addon mode, you must be lvl 1 and not be in bank mode!
+* If a bank character levels up, he will be switched to collector mode.
+* Any characters who didn't have the addon enabled from lvl 1 are automatically in collector mode.
 * Trading can be used in instances in order to share drinks, heartstones, etc.
-* Sane mode is recommended for people who haven't leveled to max before.
-* Max mode is for veterans or people who like a greater challenge.
-* Hardcore mode is for maniacs with a DIY mentality.
-* Bank mode is for alts to store your main's items.
 
 These are the available modes and lvl requirements for using Mail, AH and Trading:
 
-| Mode     | Mail Lvl      | Auction House | Trading |
-| -        | -             | -             | -       |
-| Sane     | Half Max Lvl  | Max Lvl       | Max Lvl |
-| Max      | Max Lvl       | Max Lvl       | Max Lvl |
-| Hardcore | Never         | Never         | Never   |
-| Bank     | Only at lvl 1 | Never         | Never   |
+| Mode      | Mail Lvl     | Auction House | Trading |
+| -         | -            | -             | -       |
+| Normal    | Half Max Lvl | Max Lvl       | Max Lvl |
+| Hardcore  | Max Lvl      | Never         | Never   |
+| Collector | Never        | Never         | Never   |
+| Bank      | Lvl 1        | Never         | Never   |
 
 Chat Commands:
 * `/selffound info` - shows the mode that the addon is using.
-* `/selffound sane` - switches the addon to Sane Mode (which is the default).
-* `/selffound max` - switches the addon to Max Mode.
+* `/selffound normal` - switches the addon to Normal Mode (which is the default).
 * `/selffound hardcore` - switches the addon to Hardcore Mode.
+* `/selffound collector` - switches the addon to Collector Mode.
 * `/selffound bank` - switches the addon to Bank Mode.
