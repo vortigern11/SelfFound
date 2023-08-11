@@ -1,4 +1,5 @@
 local SelfFound = CreateFrame("Frame")
+local SelfFound_OrigAuctionHouseOnTabClick
 
 -- Check which game expansion
 function SelfFound:Expansion()
@@ -85,7 +86,58 @@ SlashCmdList["SELFFOUND"] = function(msg)
     end
 end
 
+-- Limit auction house
+function SelfFound_AuctionHouseOnTabClick(index)
+    if (not index) then index = this:GetID(); end
+
+    local isNotSellTab = index == 1 or index == 2
+    local isHighEnoughLvl = UnitLevel("player") >= SF_CONFIG.ahLvl
+
+    if (isHighEnoughLvl or isNotSellTab) then
+        SelfFound_OrigAuctionHouseOnTabClick(index)
+    else
+        SelfFound:Print("Addon is in " .. SF_CONFIG.mode .. " mode")
+        SelfFound:Print("Auction House selling is available from lvl " .. SF_CONFIG.ahLvl)
+        CloseAuctionHouse()
+    end
+end
+
+-- Limit mail
+function SelfFound:MAIL_SHOW()
+    local isHighEnoughLvl = UnitLevel("player") >= SF_CONFIG.mailLvl
+
+    if isHighEnoughLvl then return end
+
+    SelfFound:Print("Addon is in " .. SF_CONFIG.mode .. " mode")
+    SelfFound:Print("Mail is available from lvl " .. SF_CONFIG.mailLvl)
+    CloseMail()
+end
+
+-- Limit trading
+TradeFrameTradeButton:SetScript("OnClick", function()
+    local isHighEnoughLvl = UnitLevel("player") >= SF_CONFIG.tradeLvl
+    local isInInstance, _ = IsInInstance()
+    local noMoneyToBeReceived = tonumber(GetTargetTradeMoney()) == 0
+
+    if (isHighEnoughLvl or (isInInstance and noMoneyToBeReceived)) then
+        AcceptTrade()
+    else
+        SelfFound:Print("Addon is in " .. SF_CONFIG.mode .. " mode")
+        SelfFound:Print("Trading is available from lvl " .. SF_CONFIG.tradeLvl .. " or in instances")
+        CloseTrade()
+    end
+end)
+
+function SelfFound:ADDON_LOADED()
+    -- Substitute functionality from the original Auction House addon
+    if (string.lower(arg1) == "blizzard_auctionui") then
+        SelfFound_OrigAuctionHouseOnTabClick = AuctionFrameTab_OnClick
+        AuctionFrameTab_OnClick = SelfFound_AuctionHouseOnTabClick
+    end
+end
+
 function SelfFound:PLAYER_ENTERING_WORLD()
+    -- Set max lvl
     local expansion = SelfFound:Expansion()
     local maxLvl = 60
 
@@ -95,12 +147,14 @@ function SelfFound:PLAYER_ENTERING_WORLD()
         maxLvl = 80
     end
 
+    -- Addon modes
     SelfFound.normalMode = { mode = "normal", mailLvl = maxLvl / 2, ahLvl = maxLvl, tradeLvl = maxLvl }
     SelfFound.hardcoreMode = { mode = "hardcore", mailLvl = maxLvl, ahLvl = 9000, tradeLvl = 9000 }
     SelfFound.collectorMode = { mode = "collector", mailLvl = 9000, ahLvl = 9000, tradeLvl = 9000 }
     SelfFound.bankMode = { mode = "bank", mailLvl = 1, ahLvl = 9000, tradeLvl = 9000 }
     SelfFound.modeCmds = { "normal", "hardcore", "collector", "bank" }
 
+    -- Set default addon mode
     local isLvl1 = UnitLevel("player") == 1
 
     if isLvl1 then
@@ -140,41 +194,15 @@ function SelfFound:PLAYER_LEVEL_UP(newLvl)
     end
 end
 
--- Limit mail
-function SelfFound:MAIL_SHOW()
-    local isHighEnoughLvl = UnitLevel("player") >= SF_CONFIG.mailLvl
+-- function SelfFound:AUCTION_HOUSE_SHOW()
+--     local isHighEnoughLvl = UnitLevel("player") >= SF_CONFIG.ahLvl
 
-    if isHighEnoughLvl then return end
+--     if isHighEnoughLvl then return end
 
-    SelfFound:Print("Addon is in " .. SF_CONFIG.mode .. " mode")
-    SelfFound:Print("Mail is available from lvl " .. SF_CONFIG.mailLvl)
-    CloseMail()
-end
-
--- Limit auction house
-function SelfFound:AUCTION_HOUSE_SHOW()
-    local isHighEnoughLvl = UnitLevel("player") >= SF_CONFIG.ahLvl
-
-    if isHighEnoughLvl then return end
-
-    SelfFound:Print("Addon is in " .. SF_CONFIG.mode .. " mode")
-    SelfFound:Print("Auction House is available from lvl " .. SF_CONFIG.ahLvl)
-    CloseAuctionHouse()
-end
-
--- Limit trading
-TradeFrameTradeButton:SetScript("OnClick", function()
-    local isHighEnoughLvl = UnitLevel("player") >= SF_CONFIG.tradeLvl
-    local isInInstance, _ = IsInInstance()
-
-    if (isInInstance or isHighEnoughLvl) then
-        AcceptTrade()
-    else
-        SelfFound:Print("Addon is in " .. SF_CONFIG.mode .. " mode")
-        SelfFound:Print("Trading is available from lvl " .. SF_CONFIG.tradeLvl .. " or in instances")
-        CloseTrade()
-    end
-end)
+--     SelfFound:Print("Addon is in " .. SF_CONFIG.mode .. " mode")
+--     SelfFound:Print("Auction House is available from lvl " .. SF_CONFIG.ahLvl)
+--     CloseAuctionHouse()
+-- end
 
 -- There is an issue with receiving party invite for some reason...
 -- function SelfFound:TRADE_SHOW()
@@ -184,21 +212,24 @@ end)
 -- end
 
 -- Start the addon
+SelfFound:RegisterEvent("ADDON_LOADED")
 SelfFound:RegisterEvent("PLAYER_ENTERING_WORLD")
 SelfFound:RegisterEvent("PLAYER_LEVEL_UP")
 SelfFound:RegisterEvent("MAIL_SHOW")
-SelfFound:RegisterEvent("AUCTION_HOUSE_SHOW")
+-- SelfFound:RegisterEvent("AUCTION_HOUSE_SHOW")
 -- SelfFound:RegisterEvent("TRADE_SHOW")
 
 SelfFound:SetScript("OnEvent", function()
-    if event == "PLAYER_ENTERING_WORLD" then
+    if event == "ADDON_LOADED" then
+        SelfFound:ADDON_LOADED()
+    elseif event == "PLAYER_ENTERING_WORLD" then
         SelfFound:PLAYER_ENTERING_WORLD()
     elseif event == "PLAYER_LEVEL_UP" then
         SelfFound:PLAYER_LEVEL_UP()
     elseif event == "MAIL_SHOW" then
         SelfFound:MAIL_SHOW()
-    elseif event == "AUCTION_HOUSE_SHOW" then
-        SelfFound:AUCTION_HOUSE_SHOW()
+    -- elseif event == "AUCTION_HOUSE_SHOW" then
+    --     SelfFound:AUCTION_HOUSE_SHOW()
     -- elseif event == "TRADE_SHOW" then
     --     SelfFound:TRADE_SHOW()
     end

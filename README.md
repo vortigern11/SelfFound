@@ -1,13 +1,14 @@
 # SelfFound Addon for WoW
 Basically a SSF without the Solo part. \
 This addon will prevent you from Trading, using the Auction House and Mailing unless you meet certain conditions. \
-Works with TurtleWoW, Vanilla, The Burning Crusade (TBC), Wrath of the Lich King (Wotlk).
+Should work with TurtleWoW, Vanilla, The Burning Crusade (TBC), Wrath of the Lich King (Wotlk).
 
 ### Important Specifics
 * In order to change the addon mode, you must be lvl 1 and not be in bank mode!
 * If a bank character levels up, he will be switched to collector mode.
 * Any characters who didn't have the addon enabled from lvl 1 are automatically in collector mode.
-* Trading can be used in instances in order to share drinks, heartstones, etc.
+* Until high enough lvl, Trading can only be used in instances in order to share drinks, heartstones, etc.
+* Until high enough lvl, Auction House can only be used to buy items, since some quests require it.
 
 These are the available modes and lvl requirements for using Mail, AH and Trading:
 
