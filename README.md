@@ -1,4 +1,4 @@
-# SensibleTrading - Addon for WoW
+# SelfFound - Addon for WoW
 Limit senseless use of Auction House and Trading until max level. \
 This is how the game should have been from the beginning. \
 Should work with TurtleWoW, Vanilla, The Burning Crusade (TBC), Wrath of the Lich King (Wotlk).
