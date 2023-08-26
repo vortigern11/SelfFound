@@ -1,5 +1,5 @@
 local SelfFound = CreateFrame("Frame")
-local SelfFound_OrigAuctionHouseOnTabClick
+local SelfFound_AuctionHouseOnTabClick_Orig
 
 -- Check which game expansion
 function SelfFound:Expansion()
@@ -25,11 +25,11 @@ end
 function SelfFound_AuctionHouseOnTabClick(index)
     if (not index) then index = this:GetID(); end
 
-    local isNotSellTab = index == 1 or index == 2
+    local isNotSellTab = index == 1
     local isHighEnoughLvl = UnitLevel("player") >= SelfFound.ahLvl
 
     if (isHighEnoughLvl or isNotSellTab) then
-        SelfFound_OrigAuctionHouseOnTabClick(index)
+        SelfFound_AuctionHouseOnTabClick_Orig(index)
     else
         SelfFound:Print("Auction House selling is available from lvl " .. SelfFound.ahLvl)
         CloseAuctionHouse()
@@ -53,7 +53,7 @@ end)
 function SelfFound:ADDON_LOADED()
     -- Substitute functionality from the original Auction House addon
     if (string.lower(arg1) == "blizzard_auctionui") then
-        SelfFound_OrigAuctionHouseOnTabClick = AuctionFrameTab_OnClick
+        SelfFound_AuctionHouseOnTabClick_Orig = AuctionFrameTab_OnClick
         AuctionFrameTab_OnClick = SelfFound_AuctionHouseOnTabClick
     end
 end
