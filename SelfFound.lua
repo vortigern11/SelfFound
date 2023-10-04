@@ -1,5 +1,4 @@
 local SelfFound = CreateFrame("Frame")
-local SelfFound_AuctionHouseOnTabClick_Orig
 
 -- Check which game expansion
 function SelfFound:Expansion()
@@ -22,41 +21,38 @@ function SelfFound:Print(msg)
 end
 
 -- Limit auction house
-function SelfFound_AuctionHouseOnTabClick(index)
-    if (not index) then index = this:GetID(); end
+function SelfFound:AUCTION_HOUSE_SHOW()
+    local isHighEnoughLvl = UnitLevel("player") >= SelfFound.maxLvl
 
-    local isNotSellTab = index == 1
-    local isHighEnoughLvl = UnitLevel("player") >= SelfFound.ahLvl
+    if isHighEnoughLvl then return end
 
-    if (isHighEnoughLvl or isNotSellTab) then
-        SelfFound_AuctionHouseOnTabClick_Orig(index)
-    else
-        SelfFound:Print("Auction House selling is available from lvl " .. SelfFound.ahLvl)
-        CloseAuctionHouse()
-    end
+    SelfFound:Print("Auction House is available from lvl " .. SelfFound.maxLvl)
+    CloseAuctionHouse()
+end
+
+-- Limit mail
+function SelfFound:MAIL_SHOW()
+    local isHighEnoughLvl = UnitLevel("player") >= SelfFound.maxLvl
+
+    if isHighEnoughLvl then return end
+
+    SelfFound:Print("Mail is available from lvl " .. SelfFound.maxLvl)
+    CloseMail()
 end
 
 -- Limit trading
 TradeFrameTradeButton:SetScript("OnClick", function()
-    local isHighEnoughLvl = UnitLevel("player") >= SelfFound.tradeLvl
+    local isHighEnoughLvl = UnitLevel("player") >= SelfFound.maxLvl
     local isInInstance, _ = IsInInstance()
     local noMoneyToBeReceived = tonumber(GetTargetTradeMoney()) == 0
 
     if (isHighEnoughLvl or (isInInstance and noMoneyToBeReceived)) then
         AcceptTrade()
     else
-        SelfFound:Print("Trading is available from lvl " .. SelfFound.tradeLvl .. " or in instances")
+        SelfFound:Print("Trading is available from lvl " .. SelfFound.maxLvl .. " or in instances")
         CloseTrade()
     end
 end)
-
-function SelfFound:ADDON_LOADED()
-    -- Substitute functionality from the original Auction House addon
-    if (string.lower(arg1) == "blizzard_auctionui") then
-        SelfFound_AuctionHouseOnTabClick_Orig = AuctionFrameTab_OnClick
-        AuctionFrameTab_OnClick = SelfFound_AuctionHouseOnTabClick
-    end
-end
 
 function SelfFound:PLAYER_ENTERING_WORLD()
     -- Set max lvl
@@ -69,33 +65,33 @@ function SelfFound:PLAYER_ENTERING_WORLD()
         maxLvl = 80
     end
 
-    SelfFound.ahLvl = maxLvl
-    SelfFound.tradeLvl = maxLvl
+    SelfFound.maxLvl = maxLvl
 end
 
 -- Notify player on new functionality
 function SelfFound:PLAYER_LEVEL_UP(newLvl)
     if not SelfFound then return end
 
-    if (newLvl == SelfFound.ahLvl) then
-        SelfFound:Print("Congrats! You can now use Auction House!")
-    end
-    if (newLvl == SelfFound.tradeLvl) then
-        SelfFound:Print("Congrats! You can now use Trading!")
+    if (newLvl == SelfFound.maxLvl) then
+        SelfFound:Print("Congrats! You finished the Self Found challenge!")
+        SelfFound:Print("Mail, Trading and the Auction House are now available")
     end
 end
 
 -- Start the addon
-SelfFound:RegisterEvent("ADDON_LOADED")
 SelfFound:RegisterEvent("PLAYER_ENTERING_WORLD")
 SelfFound:RegisterEvent("PLAYER_LEVEL_UP")
+SelfFound:RegisterEvent("MAIL_SHOW")
+SelfFound:RegisterEvent("AUCTION_HOUSE_SHOW")
 
 SelfFound:SetScript("OnEvent", function()
-    if event == "ADDON_LOADED" then
-        SelfFound:ADDON_LOADED()
-    elseif event == "PLAYER_ENTERING_WORLD" then
+    if event == "PLAYER_ENTERING_WORLD" then
         SelfFound:PLAYER_ENTERING_WORLD()
     elseif event == "PLAYER_LEVEL_UP" then
         SelfFound:PLAYER_LEVEL_UP()
+    elseif event == "MAIL_SHOW" then
+        SelfFound:MAIL_SHOW()
+    elseif event == "AUCTION_HOUSE_SHOW" then
+        SelfFound:AUCTION_HOUSE_SHOW()
     end
 end)
