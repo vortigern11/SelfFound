@@ -32,11 +32,13 @@ end
 
 -- Limit mail
 function SelfFound:MAIL_SHOW()
-    local isHighEnoughLvl = UnitLevel("player") >= SelfFound.maxLvl
+    local lvl = UnitLevel("player")
+    local isHighEnoughLvl = lvl >= SelfFound.maxLvl
+    local isDivisibleBy10 = math.mod(lvl, 10) == 0 -- Rewards for challenges
 
-    if isHighEnoughLvl then return end
+    if isHighEnoughLvl or isDivisibleBy10 then return end
 
-    SelfFound:Print("Mail is available from lvl " .. SelfFound.maxLvl)
+    SelfFound:Print("Mail is available every 10 levels")
     CloseMail()
 end
 
